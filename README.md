@@ -44,6 +44,7 @@ project-root/
 │ │ ├── note.model.ts
 │ │ └── user.model.ts
 │ ├── routes/
+│ │ ├── auth.routes.ts
 │ │ └── note.routes.ts
 │ ├── schemas/
 │ │ ├── note.schema.ts
