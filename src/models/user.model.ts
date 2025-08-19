@@ -18,7 +18,7 @@ const userSchema = new Schema<IUser>(
         role: { type: String, enum: ['user', 'admin'], default: 'user' },
         lastLogin: { type: Date },
     },
-    { timestamps: true } // إنشاء createdAt و updatedAt
+    { timestamps: true } // Create the createdAt & updatedAt 
 );
 
 export default mongoose.model<IUser>('User', userSchema);
