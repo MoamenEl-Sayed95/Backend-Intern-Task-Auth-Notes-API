@@ -16,14 +16,20 @@ export const create = async (req: AuthRequest, res: Response, next: NextFunction
   }
 };
 
+
 export const getAll = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    // Check if user is authenticated
     if (!req.user) return res.status(401).json({ message: 'Unauthorized' })
-
+    
+    // Destructure query parameters with default values
     const { search, page = '1', limit = '10' } = req.query
+
+    // Convert page and limit to numbers, default to 1 and 10 if invalid
     const pageNumber = Number(page) || 1
     const limitNumber = Number(limit) || 10
 
+    // Fetch notes from the service with role-based filtering, search, and pagination
     const notes = await noteService.getAllNotes(
       req.user.id,
       req.user.role,
@@ -31,8 +37,12 @@ export const getAll = async (req: AuthRequest, res: Response, next: NextFunction
       pageNumber,
       limitNumber
     )
+
+    // Send the fetched notes as JSON response
     res.json(notes)
   } catch (err) {
+
+    // Pass any errors to the error handling middleware
     next(err)
   }
 };
