@@ -19,30 +19,32 @@ export const create = async (req: AuthRequest, res: Response, next: NextFunction
 
 export const getAll = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    // Check if user is authenticated
     if (!req.user) return res.status(401).json({ message: 'Unauthorized' })
-    
-    // Destructure query parameters with default values
-    const { search, page = '1', limit = '10' } = req.query
-
-    // Convert page and limit to numbers, default to 1 and 10 if invalid
+    const { search, page = '1', limit = '10', sortBy = 'createdAt', order = 'desc', tags, includeDeleted } = req.query
     const pageNumber = Number(page) || 1
     const limitNumber = Number(limit) || 10
+    const tagsArray = tags ? (tags as string).split(',') : undefined
+    const includeDeletedBool = includeDeleted === 'true'
 
-    // Fetch notes from the service with role-based filtering, search, and pagination
+    let orderValue: 'asc' | 'desc' = 'desc'; // default
+    if (req.query.order === 'asc' || req.query.order === 'desc') {
+      orderValue = req.query.order;
+    }
+    
     const notes = await noteService.getAllNotes(
       req.user.id,
       req.user.role,
       search as string,
       pageNumber,
-      limitNumber
+      limitNumber,
+      sortBy as string,
+      orderValue,
+      tagsArray,
+      includeDeletedBool
     )
 
-    // Send the fetched notes as JSON response
     res.json(notes)
   } catch (err) {
-
-    // Pass any errors to the error handling middleware
     next(err)
   }
 };
@@ -78,6 +80,26 @@ export const remove = async (req: AuthRequest, res: Response, next: NextFunction
     const note = await noteService.deleteNote(req.params.id, req.user.id, req.user.role)
     if (!note) return res.status(404).json({ message: 'Note not found' })
     res.status(204).send()
+  } catch (err) {
+    next(err)
+  }
+};
+
+export const getStats = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized' })
+    const stats = await noteService.getNotesStats(req.user.id, req.user.role)
+    res.json(stats)
+  } catch (err) {
+    next(err)
+  }
+};
+
+export const getTags = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized' })
+    const tags = await noteService.getAllTags(req.user.id, req.user.role)
+    res.json(tags)
   } catch (err) {
     next(err)
   }
