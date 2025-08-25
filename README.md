@@ -34,7 +34,8 @@ project-root/
 ├── src/
 │ ├── controllers/
 │ │ ├── auth.controller.ts
-│ │ └── note.controller.ts
+│ │ ├── note.controller.ts
+│ │ └── user.controller.ts
 │ ├── middlewares/
 │ │ ├── auth.ts
 │ │ ├── errorHandler.ts
@@ -59,6 +60,7 @@ project-root/
 ├── package-lock.json
 ├── tsconfig.json
 └── README.md
+
 ```
 
 ---
