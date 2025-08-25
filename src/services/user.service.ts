@@ -37,3 +37,15 @@ export const loginUser = async (email: string, password: string) => {
 
     return { token, lastLogin: user.lastLogin }
 };
+
+export const changePassword = async (userId: string, oldPassword: string, newPassword: string) => {
+  const user = await User.findById(userId)
+  if (!user) throw new Error('User not found')
+
+  const valid = await bcrypt.compare(oldPassword, user.password)
+  if (!valid) throw new Error('Old password is incorrect')
+
+  const hashed = await bcrypt.hash(newPassword, 10)
+  user.password = hashed
+  await user.save()
+};
